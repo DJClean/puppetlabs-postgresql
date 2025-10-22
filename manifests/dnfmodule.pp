@@ -9,10 +9,19 @@ class postgresql::dnfmodule (
   Variant[Enum['present', 'absent', 'purged', 'disabled', 'installed', 'latest'], String[1]] $ensure = 'installed',
   String[1] $module = 'postgresql',
 ) {
+  case $ensure {
+    'absent', 'purged', 'disabled': {
+      $enable_only = false
+    }
+    default: {
+      $enable_only = true
+    }
+  }
+
   package { 'postgresql dnf module':
     ensure      => $ensure,
     name        => $module,
-    enable_only => true,
+    enable_only => $enable_only,
     provider    => 'dnfmodule',
   }
 
